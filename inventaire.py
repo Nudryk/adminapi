@@ -10,17 +10,22 @@ def getAllNames():
     f"{DOCKER}/containers/json",
     params={"all": "true"},
     timeout=10,
-)
+    )
+    if reponse.status_code == 404:
+        containers = "Erreur : chemin introuvable"
+    else:
+        reponse.raise_for_status()
+        containers = reponse.json()
     return {"code": reponse.status_code, "containers": reponse.json()}
 
 def main():
     allNames = getAllNames()
     print(f"Code HTTP : {allNames['code']}")
-    print("Nom des conteneurs : ")
-    for container in allNames["containers"]:    
-        print(container['Names'][0].replace("/", ""))
+    print("Liste des conteneurs : ")
+    for container in allNames["containers"]:
+        name = container['Names'][0].replace("/", "")
+        image = container['Image']
+        state = container['State']
+        print(f"Nom du conteneur : {name} | Image : {image} | Etat : {state}")
 
 main()
-
-
-
